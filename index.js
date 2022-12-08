@@ -4,7 +4,7 @@ const app = express();
 
 let topMovies = [
      {
-        title: "Harry Potter and the Chamber of Secrets",
+        title: "Harry Pötter and the Chamber of Secrets",
        director: "Chris Columbus",
     },
     {
