@@ -1,73 +1,245 @@
+
 const express = require('express'),
-    morgan = require('morgan');
-const app = express();
+app = express(),
+bodyParser = require('body-parser'),
+uuid = require('uuid'),
+morgan = require('morgan');
 
-let topMovies = [
-     {
-        title: "Harry Pötter and the Chamber of Secrets",
-       director: "Chris Columbus",
-    },
-    {
-      title: "Lord of the Rings: The Fellowship of the Ring",
-      director: "Peter Jackson",
-    },
-    {
-      title: "Pride and Prejudice",
-      director: "Joe Wright",
-    },
-    {
-      title: "Harry Potter and the Goblet of Fire",
-      director: "Mike Newell",
-    },
-    {
-      title: "Coco",
-      director: "Lee Unkrich and Adrian Molina ",
-    },
-    {
-      title: "The Lord of the Rings: The Two Towers",
-      director: "Peter Jackson",
-    },
-    {
-      title: "The Dark Knight",
-      director: "Christopher Nolan",
-    },
-    {
-      title: "Schindler's List",
-      director: "Steven Spielberg",
-    },
-    {
-      title: "Forrest Gump",
-      director: "Robert Zemeckis",
-    },
-    {
-      title: "Back to the Future",
-      director: "Robert Zemeckis",
-    },
-];
-
-
-
-
-app.use(express.static('public'));
+app.use(bodyParser.json());
 app.use(morgan('common'));
 
+let users = [
+  {
+		id: 1,
+		name: 'Karl',
+		favoriteMovies: [],
+	},
+	{
+		id: 2,
+		name: 'Krone',
+		favoriteMovies: 'Title 2',
+	},
+];
+
+let movies = [
+  {
+		Title: 'The Fountain',
+		Description: 'Description 1',
+		Genre: {
+			Name: 'Drama',
+			Description: 'Description Genre Drama',
+		},
+		Director: {
+			Name: 'Director 1',
+			Bio: 'Bio Director 1',
+			Birth: 1969,
+		},
+	},
+	{
+		Title: 'Title 2',
+		Description: 'Description 2',
+		Genre: {
+			Name: 'Action',
+			Description: 'Description Genre Action',
+		},
+		Director: {
+			Name: 'Director 2',
+			Bio: 'Bio Director 2',
+			Birth: 1972,
+		},
+	},
+	{
+		Title: 'Title 3',
+		Description: 'Description 3',
+		Genre: {
+			Name: 'Drama',
+			Description: 'Description Genre Drama',
+		},
+		Director: {
+			Name: 'Director 3',
+			Bio: 'Bio Director 3',
+			Birth: 1980,
+		},
+	},
+	{
+		Title: 'Title 4',
+		Description: 'Description 4',
+		Genre: {
+			Name: 'Drama',
+			Description: 'Description Genre Drama',
+		},
+		Director: {
+			Name: 'Director 4',
+			Bio: 'Bio Director 4',
+			Birth: 1981,
+		},
+	},
+	{
+		Title: 'Title 5',
+		Description: 'Description 5',
+		Genre: {
+			Name: 'Drama',
+			Description: 'Description Genre Drama',
+		},
+		Director: {
+			Name: 'Director 5',
+			Bio: 'Bio Director 5',
+			Birth: 1982,
+		},
+	},
+    {
+      Title: 'MovieName',
+      Description: 'Description',
+      Genre: {
+        Name: 'GenreName',
+        Description: 'DramaDescription',
+      },
+      Director: {
+        Name: 'DirectorName',
+        Bio: 'DirectorBio',
+        Birth: 1980,
+      },
+    },
+
+  ];
+
+
+//Welcome
 app.get('/', (req, res) => {
-    res.send('Welcome to my Moviedatabase MaFlix');
+  res.send('Welcome to my Moviedatabase MaFlix');
 });
 
+//get Movielist
 app.get('/movies', (req, res) => {
-    res.json(topMovies);
+	res.status(200).json(movies);
 });
 
+//get Infos about Movie
+app.get('/movies/:title', (req, res) => {
+	const { title } = req.params;
+	const movie = movies.find((movie) => movie.Title === title);
+
+	if (movie) {
+		res.status(200).json(movie);
+	} else {
+		res.status(404).send('Movie not in database');
+	}
+});
+
+//get Infos about Genre
+app.get('/movies/genre/:genreName', (req, res) => {
+	const { genreName } = req.params;
+	const genre = movies.find((movie) => movie.Genre.Name === genreName).Genre;
+
+	if (genre) {
+		res.status(200).json(genre);
+	} else {
+		res.status(404).send('Genre not in database');
+	}
+});
+
+//Get Infos about Director
+app.get('/movies/directors/:directorName', (req, res) => {
+	const { directorName } = req.params;
+	const director = movies.find(
+		(movie) => movie.Director.Name === directorName
+	).Director;
+
+	if (director) {
+		res.status(200).json(director);
+	} else {
+		res.status(404).send('Director not in database');
+	}
+});
+
+//Create User
+app.post('/users', (req, res) => {
+	const newUser = req.body;
+
+	if (newUser.name) {
+		newUser.id = uuid.v4();
+		users.push(newUser);
+		res.status(201).json(newUser);
+	} else {
+		res.status(400).send('New user requires name');
+	}
+});
+
+//Update User
+app.put('/users/:id', (req, res) => {
+	const { id } = req.params;
+	const updatedUser = req.body;
+
+	let user = users.find((user) => user.id == id);
+
+	if (user) {
+		user.name = updatedUser.name;
+		res.status(200).json(user);
+	} else {
+		res.status(400).send('User not found');
+	}
+});
+
+//Add Movie to Favorites
+app.post('/users/:id/:movieTitle', (req, res) => {
+	const { id, movieTitle } = req.params;
+
+	let user = users.find((user) => user.id == id);
+
+	if (user) {
+		user.favoriteMovies.push(movieTitle);
+		res.status(200).send(
+			`the Movie has been added to your favorites`
+		);
+	} else {
+		res.status(400).send('User not found');
+	}
+});
+
+//Remove Movie from Favs
+app.delete('/users/:id/:movieTitle', (req, res) => {
+	const { id, movieTitle } = req.params;
+
+	let user = users.find((user) => user.id == id);
+
+	if (user) {
+		user.favoriteMovies = user.favoriteMovies.filter(
+			(title) => title !== movieTitle
+		);
+		res.status(200).send(
+			`The Movie has been removed from your Favorites`
+		);
+	} else {
+		res.status(400).send('User not found');
+	}
+});
+
+//Delete User
+app.delete('/users/:id', (req, res) => {
+	const { id } = req.params;
+
+	let user = users.find((user) => user.id == id);
+
+	if (user) {
+		users = users.filter((user) => user.id != id);
+		res.status(200).send(`User ${id} has been removed from the database`);
+	} else {
+		res.status(400).send('User not found');
+	}
+});
+
+//Documentation
 app.get("/documentation", (req, res) => {
     res.sendFile("public/documentation.html", { root: __dirname });
   });
 
+  // error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send("Uh Oh, something isn't where it is supposed to be, i'll go looking, please try later");
 });
 
+// listen for requests
 app.listen(8080, () => {
     console.log('Your app is listening on Port 8080.');
 });
