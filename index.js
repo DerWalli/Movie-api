@@ -10,7 +10,9 @@ bodyParser = require('body-parser'),
 uuid = require('uuid'),
 morgan = require('morgan');
 
-mongoose.connect('mongodb://localhost:27017/myFlixDB?directConnection=true', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://127.0.0.1:27017/myFlixDB?directConnection=true', { useNewUrlParser: true, useUnifiedTopology: true });
+
+mongoose.set('strictQuery', true);
 
 app.use(bodyParser.json());
 app.use(morgan('common'));
@@ -127,15 +129,15 @@ app.get('/', (req, res) => {
 	Email: String,
 	Birthday: Date
 }*/
-app.post('users', (req, res) => {
-	Users.findOne({ Username: req.body.Username })
+app.post('/users', (req, res) => {
+	Users.findOne({ Name: req.body.Name })
 	.then((user) => {
 		if (user) {
-			return res.status(400).send(req.body.Username + 'already exists');
+			return res.status(400).send(req.body.Name + ' already exists');
 		} else {
 			Users
 				.create({
-					Username: req.body.Username,
+					Name: req.body.Username,
 					Password: req.body.Password,
 					Email: req.body.Email,
 					Birthday: req.body.Birthday
@@ -166,8 +168,8 @@ app.get('/users', (req, res) => {
   });
 
   // Get a user by username
-app.get('/users/:Username', (req, res) => {
-	Users.findOne({ Username: req.params.Username })
+app.get('/users/:Name', (req, res) => {
+	Users.findOne({ name: req.params.Name })
 	  .then((user) => {
 		res.json(user);
 	  })
@@ -188,10 +190,10 @@ app.get('/users/:Username', (req, res) => {
   (required)
   Birthday: Date
 }*/
-app.put('/users/:Username', (req, res) => {
-	Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
+app.put('/users/:Name', (req, res) => {
+	Users.findOneAndUpdate({ Name: req.params.Name }, { $set:
 	  {
-		Username: req.body.Username,
+		Name: req.body.Name,
 		Password: req.body.Password,
 		Email: req.body.Email,
 		Birthday: req.body.Birthday
@@ -212,9 +214,9 @@ app.put('/users/:Username', (req, res) => {
 	 
   
 	// Add a movie to a user's list of favorites
-  app.post('/users/:Username/movies/:MovieID', (req, res) => {
-	Users.findOneAndUpdate({ Username: req.params.Username }, {
-	   $push: { FavoriteMovies: req.params.MovieID }
+  app.post('/users/:Name/:MovieId', (req, res) => {
+	Users.findOneAndUpdate({ Name: req.params.Name }, {
+	   $push: { Favorites: req.params.MovieId }
 	 },
 	 { new: true }, // This line makes sure that the updated document is returned
 	(err, updatedUser) => {
@@ -230,9 +232,9 @@ app.put('/users/:Username', (req, res) => {
 	
   
   // DELETE a movie to a user's list of favorites
-  app.delete('/users/:Username/movies/:MovieID', (req, res) => {
-	Users.findOneAndUpdate({ Username: req.params.Username }, {
-	   $pull: { FavoriteMovies: req.params.MovieID }
+  app.delete('/users/:Name/movies/:MovieID', (req, res) => {
+	Users.findOneAndUpdate({ Name: req.params.Name }, {
+	   $pull: { Favorites: req.params.MovieID }
 	 },
 	 { new: true }, // This line makes sure that the updated document is returned
 	(err, updatedUser) => {
@@ -248,13 +250,13 @@ app.put('/users/:Username', (req, res) => {
 	  
   
   // Delete a user by username
-  app.delete('/users/:Username', (req, res) => {
-	Users.findOneAndRemove({ Username: req.params.Username })
+  app.delete('/users/:Name', (req, res) => {
+	Users.findOneAndRemove({ Name: req.params.Name })
 	  .then((user) => {
 		if (!user) {
-		  res.status(400).send(req.params.Username + ' was not found');
+		  res.status(400).send(req.params.Name + ' was not found');
 		} else {
-		  res.status(200).send(req.params.Username + ' was deleted.');
+		  res.status(200).send(req.params.Name + ' was deleted.');
 		}
 	  })
 	  .catch((err) => {
