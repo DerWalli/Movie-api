@@ -12,7 +12,7 @@ morgan = require('morgan');
 
 mongoose.connect('mongodb://127.0.0.1:27017/myFlixDB?directConnection=true', { useNewUrlParser: true, useUnifiedTopology: true });
 
-mongoose.set('strictQuery', true);
+/*mongoose.set('strictQuery', true);*/
 
 app.use(bodyParser.json());
 app.use(morgan('common'));
@@ -124,8 +124,8 @@ app.get('/', (req, res) => {
 /* We'll expect JSON in this format
 {
 	ID: Integer,
-	Username: String,
-	Pasword: String,
+	Name: String,
+	Password: String,
 	Email: String,
 	Birthday: Date
 }*/
@@ -137,7 +137,7 @@ app.post('/users', (req, res) => {
 		} else {
 			Users
 				.create({
-					Name: req.body.Username,
+					Name: req.body.Name,
 					Password: req.body.Password,
 					Email: req.body.Email,
 					Birthday: req.body.Birthday
@@ -232,7 +232,7 @@ app.put('/users/:Name', (req, res) => {
 	
   
   // DELETE a movie to a user's list of favorites
-  app.delete('/users/:Name/movies/:MovieID', (req, res) => {
+  app.delete('/users/:Name/:MovieID', (req, res) => {
 	Users.findOneAndUpdate({ Name: req.params.Name }, {
 	   $pull: { Favorites: req.params.MovieID }
 	 },
