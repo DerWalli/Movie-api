@@ -45,7 +45,7 @@ require ('./passport');
 
 //mongoose.connect('mongodb://127.0.0.1:27017/myFlixDB?directConnection=true', { useNewUrlParser: true, useUnifiedTopology: true });
 //mongoose.connect('process.env.CONNECTION_URI', { useNewUrlParser: true, useUnifiedTopology: true });
- mongoose.connect('mongodb+srv://DerWalli:43zTAhN5jEtkD7P@martinsdb.nop4cxy.mongodb.net/myFlixDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+ mongoose.connect('mongodb+srv://DerWalli:43zTAhN5jEtkD7P@martinsdb.nop4cxy.mongodb.net/myFlixDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true }, () => console.log("MongoDB Connected"));
 
 
 
