@@ -1,0 +1,1 @@
+{"_id":{"$oid":"63a42a2407b0483a49a50b2c"},"Username":"UserOne","Password":"$2b$10$M80zglULPeDhUuZzmf2pSuIkr5i0IKvoIgSLGucbwkiHoIuzlYhoS","Email":"One@only.com","Birthday":{"$date":"2000-01-01T00:00:00Z"},"Favorites":[],"__v":0}
