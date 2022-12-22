@@ -30,7 +30,6 @@ app.use(cors({
 }));
 */
 
-
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {flags: 'a'})
 
 app.use(bodyParser.json());
