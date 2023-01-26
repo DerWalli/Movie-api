@@ -14,21 +14,7 @@ const Users = Models.User;
 const cors = require('cors');
 app.use(cors());
 
-//alternative to app.use(cors()); when only certain domains should have access 
-/*
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){ // If a specific origin isn’t found on the list of allowed origins
-      let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
-      return callback(new Error(message ), false);
-    }
-    return callback(null, true);
-  }
-}));
-*/
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {flags: 'a'})
 
@@ -49,102 +35,7 @@ mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnified
 
 
 
-/*
-let users = [
-  {
-		id: 1,
-		name: 'Karl',
-		favoriteMovies: [],
-	},
-	{
-		id: 2,
-		name: 'Krone',
-		favoriteMovies: 'Title 2',
-	},
-];
 
-let movies = [
-  {
-		Title: 'The Fountain',
-		Description: 'Description 1',
-		Genre: {
-			Name: 'Drama',
-			Description: 'Description Genre Drama',
-		},
-		Director: {
-			Name: 'Director 1',
-			Bio: 'Bio Director 1',
-			Birth: 1969,
-		},
-	},
-	{
-		Title: 'Title 2',
-		Description: 'Description 2',
-		Genre: {
-			Name: 'Action',
-			Description: 'Description Genre Action',
-		},
-		Director: {
-			Name: 'Director 2',
-			Bio: 'Bio Director 2',
-			Birth: 1972,
-		},
-	},
-	{
-		Title: 'Title 3',
-		Description: 'Description 3',
-		Genre: {
-			Name: 'Drama',
-			Description: 'Description Genre Drama',
-		},
-		Director: {
-			Name: 'Director 3',
-			Bio: 'Bio Director 3',
-			Birth: 1980,
-		},
-	},
-	{
-		Title: 'Title 4',
-		Description: 'Description 4',
-		Genre: {
-			Name: 'Drama',
-			Description: 'Description Genre Drama',
-		},
-		Director: {
-			Name: 'Director 4',
-			Bio: 'Bio Director 4',
-			Birth: 1981,
-		},
-	},
-	{
-		Title: 'Title 5',
-		Description: 'Description 5',
-		Genre: {
-			Name: 'Drama',
-			Description: 'Description Genre Drama',
-		},
-		Director: {
-			Name: 'Director 5',
-			Bio: 'Bio Director 5',
-			Birth: 1982,
-		},
-	},
-    {
-      Title: 'MovieName',
-      Description: 'Description',
-      Genre: {
-        Name: 'GenreName',
-        Description: 'DramaDescription',
-      },
-      Director: {
-        Name: 'DirectorName',
-        Bio: 'DirectorBio',
-        Birth: 1980,
-      },
-    },
-
-  ];
-*/
 
 //Welcome
 app.get('/', (req, res) => {
@@ -247,7 +138,7 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (r
 	Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
 	  {
 		Username: req.body.Username,
-		Password: req.body.Password,
+		Password: hashedPassword,
 		Email: req.body.Email,
 		Birthday: req.body.Birthday
 	  }
