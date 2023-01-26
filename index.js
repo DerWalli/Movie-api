@@ -44,7 +44,8 @@ require ('./passport');
 
 
 //mongoose.connect('mongodb://127.0.0.1:27017/myFlixDB?directConnection=true', { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true }, () => console.log("MongoDB Connected"));
+//mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true }, () => console.log("MongoDB Connected"));
+mongoose.connect('mongodb+srv://DerWalli:43zTAhN5jEtkD7P@martinsdb.nop4cxy.mongodb.net/myFlixDB?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true }, () => console.log("MongoDB Connected"));
  
 
 
@@ -259,6 +260,7 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (r
 		res.status(500).send('Error: ' + err);
 	  } else {
 		res.json(updatedUser);
+		res.status(200).send('Update done')
 	  }
 	});
   });
@@ -285,7 +287,7 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (r
   
   // DELETE a movie to a user's list of favorites
   app.delete('/users/:Username/:MovieID', (req, res) => {
-	Users.findOneAndUpdate({ Userame: req.params.Userame }, {
+	Users.findOneAndUpdate({ Username: req.params.Username }, {
 	   $pull: { Favorites: req.params.MovieID }
 	 },
 	 { new: true }, // This line makes sure that the updated document is returned
