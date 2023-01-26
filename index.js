@@ -169,7 +169,7 @@ app.post('/users',
   //or use .isLength({min: 5}) which means
   //minimum value of 5 characters are only allowed
   [
-    check('Username', 'Username is required').isLength({min: 5}),
+    check('Username', 'Username is required').isLength({min: 3}),
     check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
     check('Password', 'Password is required').not().isEmpty(),
     check('Email', 'Email does not appear to be valid').isEmail()
@@ -244,11 +244,12 @@ app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (r
   (required)
   Birthday: Date
 }*/
-app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
+/* app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
+	let hashedPassword = Users.hashPassword(req.body.Password);
 	Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
 	  {
 		Username: req.body.Username,
-		Password: req.body.Password,
+		Password: hashedPassword, /*req.body.Password,*/ /*
 		Email: req.body.Email,
 		Birthday: req.body.Birthday
 	  }
@@ -262,7 +263,62 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (r
 		res.json(updatedUser);
 	  }
 	});
-  });
+  }); */
+  
+
+  app.put(
+	"/users/:Username",
+	passport.authenticate("jwt", { session: false }),
+	[
+	  check("Username", "username is required").isLength({ min: 3 }),
+	  check(
+		"Username",
+		"username can only be made of letters and numbers"
+	  ).isAlphanumeric(),
+	  check("Password", "password needs to be 8 characters long.").isLength({
+		min: 3,
+	  }),
+	  check("Email", "valid email is required").isEmail(),
+	],
+	(req, res) => {
+	  let errors = validationResult(req);
+  
+	  if (!errors.isEmpty()) {
+		return res.status(422).json({ errors: errors.array() });
+	  }
+  
+	  let hashedPassword = Users.hashPassword(req.body.Password);
+	  Users.findOneAndUpdate(
+		{ Username: req.params.Username },
+		{
+		  $set: {
+			Username: req.body.Username,
+			Email: req.body.Email,
+			Password: hashedPassword,
+			Birthday: req.body.Birthday,
+		  },
+		},
+		{ new: true },
+		(err, newUser) => {
+		  if (err) {
+			res.status(500).send("Error " + err);
+		  }
+		  if (!newUser) {
+			res
+			  .status(401)
+			  .send(
+				`${req.params.username} not found, make sure username entered correctly.`
+			  );
+		  } else {
+			res.status(201).json({
+			  message: "User Updated Sucessfully",
+			  newUser: newUser,
+			});
+		  }
+		}
+	  );
+	}
+  );
     
 	 
   
