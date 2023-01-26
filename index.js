@@ -286,7 +286,7 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (r
   
   // DELETE a movie to a user's list of favorites
   app.delete('/users/:Username/:MovieID', (req, res) => {
-	Users.findOneAndUpdate({ Userame: req.params.Userame }, {
+	Users.findOneAndUpdate({ Username: req.params.Username }, {
 	   $pull: { Favorites: req.params.MovieID }
 	 },
 	 { new: true }, // This line makes sure that the updated document is returned
@@ -321,7 +321,7 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (r
 
   // Delete a user by _id
   app.delete('/users/:_id', passport.authenticate('jwt', { session: false }), (req, res) => {
-	Users.findOneAndRemove({ _Id: req.params._id })
+	Users.findOneAndRemove({ _id: req.params._id })
 	  .then((user) => {
 		if (!user) {
 		  res.status(400).send(req.params._id + ' was not found');
